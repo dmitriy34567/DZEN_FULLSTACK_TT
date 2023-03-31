@@ -13,10 +13,11 @@ const PORT = 5000
 const app = express()
 app.use(cors())
 app.use(express.json())
-app.use(fileUpload({}))
-app.use(express.static(path.join('static')))
+//app.use(fileUpload({}))
+//app.use(express.static(path.join('static')))
 app.use('/api', router)
 app.use(errorHandler)
+
 
 
 const start = async () => {
@@ -24,6 +25,8 @@ const start = async () => {
         await sequelize.authenticate()
         await sequelize.sync()
         app.listen(PORT, () => console.log('server started on port', PORT))
+
+        
     } catch (e) {
         console.log(e)
     }    

@@ -1,65 +1,38 @@
-const multer = require('multer');
-const uuid = require('uuid')
-const path = require('path')
-const ApiError = require('../error/ApiError')
-const {Comments} = require('../models/models')
-
-const storage = multer.diskStorage({
-  destination: function (req, files, cb) {
-    cb(null, 'static')
-  },
-  filename: function (req, files, cb) {
-    const ext = path.extname(files.originalname)
-    cb(null, uuid.v4() + ext)
-  }
-})
-
-const fileFilter = function (req, files, cb) {
-  const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'text/plain']
-  if (!allowedTypes.includes(files.mimetype)) {
-    const error = new Error('Wrong files type')
-    error.code = 'LIMIT_FILE_TYPES'
-    return cb(error, false)
-  }
-  cb(null, true)
-}
-
-const upload = multer({
-  storage: storage,
-  fileFilter: fileFilter,
-  limits: { fileSize: 102400 } // set maximum file size to 100 KB
-});
-
-
-
+const express = require('express');
+const router = express.Router();
+const formidable = require('formidable');
 const fs = require('fs');
-if (!fs.existsSync('./static')) {
-  fs.mkdirSync('./static');
-}
+const ApiError = require('../error/ApiError');
+const {Comments} = require('../models/models');
+const path = require('path')
 
 class FilesController {
-  async create (req, res, next) {
+  async create(req, res, next) {
     try {
-      if (!req.files) {
-        return res.status(400).send('No file uploaded');
-      }
-      //res.json(req.files)
-      const tempPath = req.files[0].path;
-      const targetPath = './static/' + req.files[0].originalname;
+      console.log(req.files)
+        console.log(req.files.path)
+        console.log(req.files.name)
+        res.send(req.files);
+      const form = new formidable.IncomingForm();
+      form.uploadDir = path.join(process.cwd(), './uploads');
+      form.keepExtensions = true;
+      form.parse(req, (err, fields, files) => {
+        if (err) throw err;
+        const file = req.files; // Получаем первый файл из объекта files
+        const fileName = file.name; // Получаем имя файла
+        const filePath = file.path; // Получаем путь к файлу на сервере
+        console.log('filePath:', filePath);
+        console.log('fileName:', fileName);
+        // Делаем что-то с файлом, например, сохраняем его на диск
+        console.log('filePath:', filePath);
+      fs.renameSync(filePath, form.uploadDir + fileName);
   
-      fs.rename(tempPath, targetPath, err => {
-        if (err) {
-          return next(ApiError.badRequest(err.message));
-        }
-        res.status(200).send('File uploaded successfully');
+        res.send('File uploaded successfully');
       });
     } catch (err) {
       next(ApiError.badRequest(err.message));
     }
   }
-
-  
-  
 
   async getAll(req, res, next) {
     try {
