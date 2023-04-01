@@ -4,31 +4,30 @@ const formidable = require('formidable');
 const fs = require('fs');
 const ApiError = require('../error/ApiError');
 const {Comments} = require('../models/models');
+const { v4: uuidv4 } = require('uuid');
+
 const path = require('path')
 
 class FilesController {
   async create(req, res, next) {
     try {
-      console.log(req.files)
-        console.log(req.files.path)
-        console.log(req.files.name)
-        res.send(req.files);
       const form = new formidable.IncomingForm();
-      form.uploadDir = path.join(process.cwd(), './uploads');
+      form.uploadDir = '../uploads'; // relative path to the uploads directory
       form.keepExtensions = true;
       form.parse(req, (err, fields, files) => {
         if (err) throw err;
-        const file = req.files; // Получаем первый файл из объекта files
-        const fileName = file.name; // Получаем имя файла
+        const file = req.files[0]; // Получаем файл из объекта files
+        const fileName = uuidv4() // Получаем имя файла
         const filePath = file.path; // Получаем путь к файлу на сервере
-        console.log('filePath:', filePath);
-        console.log('fileName:', fileName);
+        console.log(filePath)
+        console.log(form.uploadDir + fileName+ ".jpg")
         // Делаем что-то с файлом, например, сохраняем его на диск
-        console.log('filePath:', filePath);
-      fs.renameSync(filePath, form.uploadDir + fileName);
-  
+        fs.renameSync(filePath, form.uploadDir + "file"+ ".jpg");
+        
+        
         res.send('File uploaded successfully');
       });
+        res.send('File uploaded successfully');
     } catch (err) {
       next(ApiError.badRequest(err.message));
     }
@@ -46,3 +45,50 @@ class FilesController {
 }
 
 module.exports = new FilesController();
+
+/* частично работает 
+const form = new formidable.IncomingForm();
+      form.uploadDir = '../uploads'; // relative path to the uploads directory
+      form.keepExtensions = true;
+      form.parse(req, (err, fields, files) => {
+        if (err) throw err;
+        const file = req.files[0]; // Получаем файл из объекта files
+        const fileName = uuidv4() // Получаем имя файла
+        const filePath = file.path; // Получаем путь к файлу на сервере
+        console.log(filePath)
+        console.log(form.uploadDir + fileName+ ".jpg")
+        // Делаем что-то с файлом, например, сохраняем его на диск
+        fs.renameSync(filePath, form.uploadDir + "file"+ ".jpg");
+      
+        res.send('File uploaded successfully');
+      });
+        res.send('File uploaded successfully');
+
+*/
+
+/* експерементальная штука пока не работает совсем но не крашится, возможно нужно еще как то до настроить
+ const fs = require('fs');
+
+// получаем картинку из запроса
+const image = req.body.image;
+
+// создаем новый файл с уникальным именем
+const imageName = `${Date.now()}.png`;
+
+// путь куда мы сохраняем картинку на сервере
+const imagePath = `../uploads/${imageName}`;
+
+// сохраняем картинку на сервере
+fs.writeFile(imagePath, image, 'base64', (err) => {
+  if (err) {
+    console.error(err);
+    return res.status(500).json({ error: 'Ошибка при сохранении изображения' });
+  }
+
+  // отправляем успешный ответ
+  res.json({ success: true, imageUrl: `/images/${imageName}` });
+});
+     
+
+
+*/
