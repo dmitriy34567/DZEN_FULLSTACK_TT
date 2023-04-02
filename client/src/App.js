@@ -8,9 +8,9 @@ function App() {
   return (
     <div className="App">
       
-      <FileUploadForm/>
+      <CommentForm/>
     </div>
   );
 }
-//<CommentForm/>
+//<FileUploadForm/>
 export default App;

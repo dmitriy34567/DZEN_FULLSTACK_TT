@@ -8,6 +8,7 @@ import ReCAPTCHA from 'react-google-recaptcha';
 import Form from 'react-bootstrap/Form';
 import ReactPaginate from "react-paginate";
 import "bootstrap/dist/css/bootstrap.min.css";
+//import "./comments.module.css"
 
 const NewCommentFetch = async ({ reply, username, email, text }) => {
   try {
@@ -108,15 +109,20 @@ const [captchaToken, setCaptchaToken] = useState('');
     }
     return (
       <div style={{ marginLeft: '100px' }}>
-        {replies.map((reply) => (
-          <div key={reply.id}>
-            <h5>{reply.username}</h5>
-            <p>{reply.text}</p>
-            <button onClick={() => setReply(reply.id)}>Reply</button>
-            {renderReplies(items, reply.id)}
-          </div>
-        ))}
-      </div>
+  {replies.map((reply) => (
+    <div key={reply.id}>
+      <img className="avatar" src="https://png.pngtree.com/png-vector/20190115/ourlarge/pngtree-avatar-male-icon-design-vector-png-image_316040.jpg" alt="" style={{ width: "50px", height: "50px", borderRadius: "50%", border: "3px solid black", marginRight: "20px" }} />
+      <h5 style={{ display: "inline-block", marginLeft: "10px" }}>{reply.username}</h5>
+      <p style={{ display: "inline-block", marginLeft: "10px" }}>{reply.createdAt}</p>
+      <button style={{ display: "inline-block", marginLeft: "10px" }} onClick={() => setReply(reply.id)}>Reply</button>
+      <p style={{ marginTop: "10px" }}>{reply.text}</p>
+      <br />
+      
+      
+      {renderReplies(items, reply.id)}
+    </div>
+  ))}
+</div>
     );
   }
 
@@ -188,11 +194,17 @@ const [captchaToken, setCaptchaToken] = useState('');
         <Accordion>
           {displayedItems.map((comment) => (
             <Accordion.Item key={comment.id} eventKey={comment.id}>
-              <Accordion.Header>
-                <h5>{comment.username}</h5>
-                <p>{comment.text}</p>
-                <p>{comment.createdAt}</p>
-                <button onClick={() => setReply(comment.id)}>Reply</button>
+              <Accordion.Header >
+                
+                <div>
+                  <img className="avatar" src="https://cdn-icons-png.flaticon.com/512/4756/4756638.png" alt="" style={{ width: "50px", height: "50px", borderRadius: "50%", border: "3px solid black", marginRight: "20px" }} />
+                  <div style={{ display: "inline-block", verticalAlign: "top" }}>
+                  <h5 style={{ marginLeft: "10px" }}>{comment.username}</h5>
+                  <p style={{ marginLeft: "10px" }}>{comment.createdAt}</p>
+                  <p style={{ marginLeft: "10px", marginBottom: 0 }}>{comment.text}</p>
+                  </div>
+                  <button style={{float: "right", marginLeft: "10px" }} onClick={() => setReply(comment.id)}>Reply</button>
+                </div>
               </Accordion.Header>
               <Accordion.Body>
               {renderReplies(items, comment.id)}
