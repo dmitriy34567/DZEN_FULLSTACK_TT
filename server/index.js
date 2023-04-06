@@ -13,7 +13,7 @@ const PORT = 5000
 const app = express()
 app.use(cors())
 app.use(express.json())
-//app.use(fileUpload({}))
+app.use(fileUpload({}))
 //app.use(express.static(path.join(__dirname +'../uploads')))
 app.use('/api', router)
 app.use(errorHandler)

@@ -1,4 +1,66 @@
-const express = require('express');
+const fs = require('fs')
+const path = require('path');
+const uid = require('uid');
+
+const uploadDir = '../uploads'
+
+class FilesController {
+    
+    async create(req, res) {
+        try {
+          const file = req.files.file;
+
+          let filePath = path.join(uploadDir, `uniqueFileName${Math.random(100000)}.png`);
+
+          if (fs.existsSync(filePath)) {
+              return res.status(400).json({message: 'File already exist'})
+          }
+
+          file.mv(filePath);
+
+          res.json(`${uploadDir}/${filePath}`);
+        } catch (e) {
+            console.log(e)
+            return res.status(500).json(e)
+        }
+    }
+}
+
+module.exports = new FilesController()
+/*async createDir(req, res) {
+        try {
+            const {name, type, parent} = req.body
+            const file = new File({name, type, parent, user: req.user.id})
+            const parentFile = await File.findOne({_id: parent})
+            if(!parentFile) {
+                file.path = name
+                await fileService.createDir(file)
+            } else {
+                file.path = `${parentFile.path}\\${file.name}`
+                await fileService.createDir(file)
+                parentFile.childs.push(file._id)
+                await parentFile.save()
+            }
+            await file.save()
+            return res.json(file)
+        } catch (e) {
+            console.log(e)
+            return res.status(400).json(e)
+        }
+    }
+
+    async getFiles(req, res) {
+        try {
+            const files = await File.find({user: req.user.id, parent: req.query.parent})
+            return res.json(files)
+        } catch (e) {
+            console.log(e)
+            return res.status(500).json({message: "Can not get files"})
+        }
+    }
+*/
+
+/*const express = require('express');
 const router = express.Router();
 const formidable = require('formidable');
 const fs = require('fs');
@@ -45,7 +107,7 @@ class FilesController {
 }
 
 module.exports = new FilesController();
-
+*/
 /* частично работает 
 const form = new formidable.IncomingForm();
       form.uploadDir = '../uploads'; // relative path to the uploads directory

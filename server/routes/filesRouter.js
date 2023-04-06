@@ -3,6 +3,6 @@ const router = new Router()
 const FilesController = require('../controllers/FilesController')
 
 router.post('/', FilesController.create)
-router.get('/', FilesController.getAll)
+//router.get('/', FilesController.getFiles)
 
 module.exports = router
